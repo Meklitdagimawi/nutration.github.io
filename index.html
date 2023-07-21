@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nutrition Details</title>
+  <!-- Include the Highcharts library -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <style>
+    
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    header {
+      background-color: #000000;
+      color: #fff;
+      padding: 10px;
+    }
+    main {
+      margin: 20px;
+    }
+    footer {
+      background-color: #000000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      
+    }
+    header {
+      background-color: #fec7c6;
+      color: #fff;
+      padding: 10px;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    nav li {
+      display: inline-block;
+      margin-right: 20px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+    }
+    input[type="search"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button[type="submit"] {
+      padding: 10px 20px;
+      background-color: #fec7c6;
+      color: #040404;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #container3 {
+      height: 400px;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color:#fec7c6;
+      color: #000000;
+      padding: 20px;
+      text-align: center;
+      font-size: 10px;
+    }
+    footer p {
+      margin: 0;
+    }
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid #fff;
+    }
+    footer a:hover {
+      border-bottom: none;
+    }
+    .highcharts-figure {
+  margin-bottom: 100px; /* adjust the value as per your preference */
+}
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <a href="index2.html"><h2>Back</h2></a>
+      </ul>
+    </nav>
+  </header>
+  
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+<figure class="highcharts-figure">
+  <div id="container"></div>
+  <p class="highcharts-description">
+    A bar graph showing the balanced food nutrition for a specific food item. The graph displays the percentage of carbohydrates, protein, and fat in the food item.
+  </p>
+</figure>
+  <section id="par2">
+    <div class="container-fluid">
+      <div class="row" id="p1">
+        <div class="col-lg-5">
+          <label for="exampleFormControlInput1" class="form-label"><h5 id="p1">Insert the meal you want to search for</h5></label>
+          <input type="Search" id="textBox2" placeholder=" ">
+          <button type="submit" id="btn2">search</button>
+        </div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <figure class="highcharts-figure">
+      <div id="container3"></div>
+      <p class="highcharts-description" id="p1">
+        The chart to be generated shows the details of any food items you search for. It includes how much Calories, 
+        Carbohydrate, Protein, Fat, Cholesterol and Fiber a certain food item includes.
+      </p>
+    </figure>
+  </section>
+
+  <script>
+    let info = [
+  ['Carbohydrates', 50], // replace with your desired nutrient and amount
+  ['Protein', 25],
+  ['Fat', 25]
+];
+
+Highcharts.chart('container', {
+  chart: {
+    type: 'bar'
+  },
+  title: {
+    text: 'Balanced Food Nutrition'
+  },
+  subtitle: {
+    text: 'Source: <a href="#">Your Website</a>'
+  },
+  xAxis: {
+    categories: ['Nutrients']
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      text: 'Amount (%)'
+    }
+  },
+  legend: {
+    reversed: true
+  },
+  plotOptions: {
+    series: {
+      stacking: 'normal'
+    }
+  },
+  series: [{
+    name: 'Nutrient',
+    data: info,
+    colors: [
+      '#7cb5ec', // carbohydrates color
+      '#f7a35c', // protein color
+      '#90ee7e'  // fat color
+    ]
+  }]
+});
+    let btn2 = document.getElementById('btn2');
+    btn2.addEventListener('click', function() {
+      let val = document.getElementById('textBox2').value;
+      let info = [
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ];
+      
+      fetch('https://trackapi.nutritionix.com/v2/search/instant?query='+val,{
+        method: "GET",
+        headers: {"Content-Type":"application/json", "x-app-id":"aaa1b4a8", "x-app-key":"9a78ba826513ec41d6c20062ce1ed2b3"},
+      })
+      .then((response) => response.json())
+      .then(json => {
+        console.log(json.common[0].food_name);
+        let data = {
+          "query":json.common[0].food_name
+        };
+        fetch('https://trackapi.nutritionix.com/v2/natural/nutrients',{
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {"Content-Type":"application/json", "x-app-id":"aaa1b4a8", "x-app-key":"9a78ba826513ec41d6c20062ce1ed2b3"},
+        })
+        .then((response) => response.json())
+        .then(json => {
+          console.log(json.foods);
+          info[0][0] = 'Calories';
+          info[0][1] = json.foods[0].nf_calories;
+          info[1][0] = 'Cholesterol';
+          info[1][1] =json.foods[0].nf_cholesterol;
+          info[2][0] = 'Carbohydrate';
+          info[2][1] = json.foods[0].nf_total_carbohydrate;
+          info[3][0] = 'Protein';
+          info[3][1] = json.foods[0].nf_protein;
+          info[4][0] = 'Fat';
+          info[4][1] = json.foods[0].nf_total_fat;
+          info[5][0] = 'Fiber';
+          info[5][1] = json.foods[0].nf_dietary_fiber;
+          
+          Highcharts.chart('container3', {
+            chart: {
+              type: 'pie' // change chart type to pie
+            },
+            title: {
+              text: 'Nutrition Details of ' + val
+            },
+            subtitle: {
+              text: 'Source: <a href="https://trackapi.nutritionix.com" target="_blank">Nutrition Details</a>'
+            },
+            yAxis: {
+              min: 0,
+              title: {
+                text: 'amount per serving (in grams)'
+              }
+            },
+            legend: {
+              enabled: false
+            },
+            tooltip: {
+              pointFormat: val+' Content: <b>{point.y:.1f} grams</b>'
+            },
+            series: [{
+              name: 'Nutrients',
+              colors: [
+                '#9b20d9', '#9215ac', '#861ec9', '#7a17e6', '#7010f9', '#691af3'
+              ],
+              colorByPoint: true,
+              groupPadding: 0,
+              data: info,
+              dataLabels: {
+                enabled: true,
+                rotation: -90,
+                inside: function() {
+                  return this.y;
+                },
+                style: {
+                  fontSize: '13px',
+                  fontFamily: 'Verdana, sans-serif'
+                }
+              }
+            }]
+          });
+        })
+        
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+
+  <footer>
+    <p>&copy; 2023 - All Rights Reserved - <a href="#">Privacy Policy</a></p>
+  </footer>
+
+</body>
+</html>
